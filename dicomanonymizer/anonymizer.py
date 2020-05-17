@@ -4,6 +4,7 @@ import json
 import os
 import re
 import tqdm
+import shutil
 
 from .simpledicomanonymizer import *
 
@@ -38,7 +39,16 @@ def anonymize(inputPath, outputPath, anonymizationActions):
 
     progressBar = tqdm.tqdm(total=len(inputFilesList))
     for cpt in range(len(inputFilesList)):
-        anonymizeDICOMFile(inputFilesList[cpt], outputFilesList[cpt], anonymizationActions)
+        if os.path.isdir(inputFilesList[cpt]):
+            print ("skip directory ",inputFilesList[cpt])
+        else:
+            file_name, file_extension = os.path.splitext(inputFilesList[cpt])
+            if file_extension == ".xml":
+                print ("shutil.copyfile(",inputFilesList[cpt],",",outputFilesList[cpt],")")
+                shutil.copyfile(inputFilesList[cpt], outputFilesList[cpt])
+            else:
+                print ("anonymizeDICOMFile(",inputFilesList[cpt],",",outputFilesList[cpt],",",anonymizationActions,")")
+                anonymizeDICOMFile(inputFilesList[cpt], outputFilesList[cpt], anonymizationActions)
         progressBar.update(1)
 
     progressBar.close()
@@ -113,3 +123,7 @@ def main(definedActionMap = {}):
 
     # Launch the anonymization
     anonymize(InputPath, OutputPath, newAnonymizationActions)
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()

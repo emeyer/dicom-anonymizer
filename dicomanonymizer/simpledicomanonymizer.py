@@ -225,6 +225,7 @@ def anonymizeDICOMFile(inFile, outFile, dictionary = ''):
     if dictionary != '':
         currentAnonymizationActions.update(dictionary)
 
+    print ("pydicom.dcmread(",inFile,")")
     dataset = pydicom.dcmread(inFile)
 
     for tag, action in currentAnonymizationActions.items():
